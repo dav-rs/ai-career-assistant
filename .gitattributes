@@ -1,0 +1,14 @@
+# Normalize line endings
+* text=auto
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+
+# Documentation
+*.md text
+
+# Python
+*.py text
