@@ -5,19 +5,6 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system-level build tools and libraries required by PyAV / ffmpeg
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    pkg-config \
-    libavformat-dev \
-    libavcodec-dev \
-    libavdevice-dev \
-    libavutil-dev \
-    libswscale-dev \
-    libswresample-dev \
-    libavfilter-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy the pre-compiled uv binary directly (faster than pip install uv)
 COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /uvx /bin/
 
