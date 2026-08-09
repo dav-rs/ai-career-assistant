@@ -18,7 +18,7 @@ from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-from rag.prompts import build_messages 
+from src.rag.prompts import build_messages 
 
 # ---------------------------------------------------------------------------
 # Configuration
