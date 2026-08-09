@@ -87,7 +87,7 @@ def convert_history(history: list | None) -> list:
 # Chat handler
 # ---------------------------------------------------------------------------
 
-def chat(message: str, history: list | None) -> str:
+def chat(message: str, history: list | None):
     """
     Handle a user message and return a grounded response.
 
@@ -96,9 +96,16 @@ def chat(message: str, history: list | None) -> str:
 
     langchain_history = convert_history(history)
 
-    answer, sources = pipeline.answer_question(
-        question=message, history=langchain_history,
-    )
+    partial_answer = ""
+    sources = []
+
+    # Consume the generator yielded by the pipeline
+    for event_type, data in pipeline.stream_answer(question=message, history=langchain_history):
+        if event_type == "token":
+            partial_answer += data
+            yield partial_answer
+        elif event_type == "sources":
+            sources = data
 
     source_names = []
 
@@ -119,13 +126,15 @@ def chat(message: str, history: list | None) -> str:
             for source in source_names
         )
 
-        answer = (
-            f"{answer}\n\n"
+        partial_answer = (
+            f"{partial_answer}\n\n"
             f"**Sources**\n"
             f"{sources_markdown}"
         )
 
-    return answer
+        # Final yield including sources markdown
+        yield partial_answer
+    
 
 
 # ---------------------------------------------------------------------------
