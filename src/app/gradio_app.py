@@ -87,7 +87,7 @@ def convert_history(history: list | None) -> list:
 # Chat handler
 # ---------------------------------------------------------------------------
 
-def chat(message: str, history: list | None) -> str:
+def chat(message: str, history: list | None):
     """
     Handle a user message and return a grounded response.
 
@@ -95,10 +95,6 @@ def chat(message: str, history: list | None) -> str:
     """
 
     langchain_history = convert_history(history)
-
-    # answer, sources = pipeline.answer_question(
-    #     question=message, history=langchain_history,
-    # )
 
     partial_answer = ""
     sources = []
@@ -129,14 +125,6 @@ def chat(message: str, history: list | None) -> str:
             f"- {source}"
             for source in source_names
         )
-
-        # answer = (
-        #     f"{answer}\n\n"
-        #     f"**Sources**\n"
-        #     f"{sources_markdown}"
-        # )
-
-    # return answer
 
         partial_answer = (
             f"{partial_answer}\n\n"
