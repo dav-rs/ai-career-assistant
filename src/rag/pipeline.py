@@ -112,3 +112,37 @@ class RAGPipeline:
         response = self.llm.invoke(messages)
 
         return response.content, retrieved_docs
+
+    def stream_answer(self, question: str, history: list | None = None):
+        """
+        Stream a grounded answer to a user question chunk-by-chunk.
+
+        Parameters
+        ----------
+        question
+            Current user question.
+        history
+            Previous conversation messages in LangChain message format.
+
+        Yields
+        -------
+        str
+            Incremental text chunks from the LLM model.
+        
+        Returns
+        -------
+        list[Document]
+            Retrieved source documents (yielded/handled at pipeline termination).
+        """
+        retrieved_docs = self._retrieve(question=question, history=history)
+
+        context = "\n\n".join(document.page_content for document in retrieved_docs)
+
+        messages = build_messages(question=question, context=context, history=history)
+
+        # Stream chunks from ChatOpenAI using LangChain's .stream()
+        for chunk in self.llm.stream(messages):
+            if chunk.content:
+                yield ("token", chunk.content)
+
+        yield ("sources", retrieved_docs)
