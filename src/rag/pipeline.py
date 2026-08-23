@@ -26,7 +26,7 @@ from src.rag.prompts import build_messages
 
 LLM_MODEL = "gpt-5.6-luna"
 
-DEFAULT_TOP_K = 3
+DEFAULT_TOP_K = 6
 
 
 class RAGPipeline:
@@ -78,8 +78,8 @@ class RAGPipeline:
         recent_questions: list[str] = []
 
         if history:
-            # Allow for up to 2 previous questions to be considered for the retrieval of context 
-            recent_questions = [message.content for message in history if isinstance(message, HumanMessage)][-2:]
+            # Allow for up to 3 previous questions to be considered for the retrieval of context 
+            recent_questions = [message.content for message in history if isinstance(message, HumanMessage)][-3:]
 
         retrieval_query = "\n".join([*recent_questions, question])
 
