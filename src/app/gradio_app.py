@@ -33,7 +33,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "knowledge_base"
 VECTOR_STORE_PATH = PROJECT_ROOT / "data" / "vector_db"
 
-TOP_K = 4
+TOP_K = 6
 
 
 # ---------------------------------------------------------------------------

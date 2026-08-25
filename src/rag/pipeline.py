@@ -85,6 +85,29 @@ class RAGPipeline:
 
         return self.retriever.invoke(retrieval_query)
 
+    def _format_context(self, docs: list[Document]) -> str:
+        """
+        Format retrieved documents with attribution metadata so the LLM can
+        ground claims in specific, citable sources rather than anonymous prose.
+        Only metadata that aids attribution or precision (title, type, date)
+        is surfaced — skills/tools are omitted since they're already covered
+        in the page content itself and would only add redundant noise.
+        """
+        blocks = []
+        for doc in docs:
+            meta = doc.metadata
+            label = meta.get("title") or meta.get("source", "unknown source")
+            doc_type = meta.get("type", "document")
+            date = meta.get("year") or meta.get("end_date") or meta.get("date_updated")
+
+            header = f"[{doc_type.upper()}: {label}"
+            if date:
+                header += f" — {date}"
+            header += "]"
+
+            blocks.append(f"{header}\n{doc.page_content}")
+        return "\n\n".join(blocks)
+
     def answer_question(self, question: str, history: list | None = None) -> tuple[str, list[Document]]:
         """
         Generate a grounded answer to a user question.
@@ -105,7 +128,7 @@ class RAGPipeline:
 
         retrieved_docs = self._retrieve(question=question, history=history)
 
-        context = "\n\n".join(document.page_content for document in retrieved_docs)
+        context = self._format_context(retrieved_docs)
 
         messages = build_messages(question=question, context=context, history=history)
 
@@ -136,7 +159,7 @@ class RAGPipeline:
         """
         retrieved_docs = self._retrieve(question=question, history=history)
 
-        context = "\n\n".join(document.page_content for document in retrieved_docs)
+        context = self._format_context(retrieved_docs)
 
         messages = build_messages(question=question, context=context, history=history)
 
