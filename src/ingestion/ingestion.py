@@ -126,7 +126,7 @@ def load_documents(data_dir: Path) -> list[Document]:
     return documents
 
 
-MARKDOWN_HEADERS = [("#", "h1"), ("##", "h2"), ("###", "h3")]
+MARKDOWN_HEADERS = [("#", "h1"), ("##", "h2"), ("###", "h3"), ("####", "h4")]
 
 
 def split_documents(documents: list[Document], *, chunk_size: int = 500, chunk_overlap: int = 100) -> list[Document]:
@@ -170,8 +170,16 @@ def split_documents(documents: list[Document], *, chunk_size: int = 500, chunk_o
             header_chunks = header_splitter.split_text(doc.page_content)
             for hc in header_chunks:
                 hc.metadata = {**doc.metadata, **hc.metadata}
+
             # Safety net: re-split any section still over chunk_size.
-            chunks.extend(char_splitter.split_documents(header_chunks))
+            for hc in header_chunks:
+                header_path = " > ".join(hc.metadata[level] for level in ("h1", "h2", "h3", "h4") if level in hc.metadata)
+                sub_chunks = char_splitter.split_documents([hc])
+                # add header context to every sub-chunk, not just the first                
+                for sc in sub_chunks:
+                    sc.page_content = f"[{header_path}]\n{sc.page_content}" if header_path else sc.page_content
+                chunks.extend(sub_chunks)
+
         else:
             chunks.extend(char_splitter.split_documents([doc]))
 

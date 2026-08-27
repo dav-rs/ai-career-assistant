@@ -21,10 +21,17 @@ from src.rag.pipeline import RAGPipeline
 
 from dotenv import load_dotenv
 
+import logging
+
 
 # ---------------------------------------------------------------------------
 # Paths and configuration
 # ---------------------------------------------------------------------------
+
+# logging.basicConfig(
+#     level=logging.DEBUG,   # switch to logging.INFO for the deployed HF Space
+#     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+# )
 
 load_dotenv(override=True)
 
@@ -33,7 +40,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "knowledge_base"
 VECTOR_STORE_PATH = PROJECT_ROOT / "data" / "vector_db"
 
-TOP_K = 4
+TOP_K = 7
 
 
 # ---------------------------------------------------------------------------
@@ -171,4 +178,4 @@ demo = gr.ChatInterface(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    demo.launch(inbrowser=False, server_name='0.0.0.0', server_port=7860)
+    demo.launch(inbrowser=False, server_name='0.0.0.0', server_port=7861)

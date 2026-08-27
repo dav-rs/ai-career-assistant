@@ -95,6 +95,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+notebooks/00_test.ipynb
 
 # IPython
 profile_default/
