@@ -22,6 +22,7 @@ from src.rag.pipeline import RAGPipeline
 from dotenv import load_dotenv
 
 import logging
+import os
 
 
 # ---------------------------------------------------------------------------
@@ -33,7 +34,16 @@ import logging
 #     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 # )
 
+PORT = int(os.getenv("PORT", "7860"))
+
 load_dotenv(override=True)
+
+# Gatekeeper: Fail immediately if a critical key is missing
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise RuntimeError(
+        "OPENAI_API_KEY is missing! Check your .env file or environment variables."
+    )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -178,4 +188,4 @@ demo = gr.ChatInterface(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    demo.launch(inbrowser=False, server_name='0.0.0.0', server_port=7861)
+    demo.launch(inbrowser=False, server_name='0.0.0.0', server_port=PORT)
