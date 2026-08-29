@@ -14,7 +14,6 @@ data/vector_db
 
 .DS_Store
 
-tests
 docs
 
 README.md
