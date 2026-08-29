@@ -31,6 +31,7 @@ data/raw/
 data/processed/
 data/interim/
 .DS_Store
+dockerfile_nostages.txt
 
 ## keep folder structure
 !data/raw/.gitkeep
