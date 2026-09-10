@@ -18,6 +18,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from src.ingestion.ingestion import ensure_vector_store
 from src.rag.pipeline import RAGPipeline
+from src.app.ratelimit import check_rate_limit
 
 from dotenv import load_dotenv
 
@@ -104,13 +105,18 @@ def convert_history(history: list | None) -> list:
 # Chat handler
 # ---------------------------------------------------------------------------
 
-def chat(message: str, history: list | None):
+def chat(message: str, history: list | None, request: gr.Request):
     """
     Handle a user message and return a grounded response.
 
     The application delegates retrieval and generation to RAGPipeline.
     """
 
+    session_id = request.client.host if request else "unknown"
+    if not check_rate_limit(session_id):
+        yield "You've sent a lot of messages recently — please wait a few minutes before trying again."
+        return
+    
     langchain_history = convert_history(history)
 
     partial_answer = ""
@@ -188,4 +194,4 @@ demo = gr.ChatInterface(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    demo.launch(inbrowser=False, server_name='0.0.0.0', server_port=PORT)
+    demo.launch(inbrowser=False, server_name='0.0.0.0', server_port=PORT, auth=('recruiter', os.getenv('APP_PASSWORD')))
